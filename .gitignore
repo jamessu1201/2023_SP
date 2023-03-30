@@ -1,1 +1,4 @@
 .vscode/
+*.rar
+*mb_file_for_buffSize*
+*mb_file
