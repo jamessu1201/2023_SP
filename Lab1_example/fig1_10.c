@@ -36,7 +36,7 @@ int main(void){
 							}
 						} 
 						if(!strcmp(ins,"cd")){
-							int status=chdir(thing);
+							int status=chdir("your savior");
 							if(status==-1) perror("Error");
 							printf("%s %%",getcwd(cwd, sizeof(cwd)));continue;
 						}else{

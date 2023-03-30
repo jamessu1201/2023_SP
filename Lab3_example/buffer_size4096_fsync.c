@@ -11,9 +11,10 @@ int main(void)
 		char location[]="/dev/null";
 		int fd=open(location,O_RDWR);
 		while ((n = read(STDIN_FILENO, buf, BUFFSIZE)) > 0){
+				fsync(fd);
 				if (write(fd, buf, n) != n)
 						err_sys("write error");
-                fsync(fd);
+                
 		}
 
 		if (n < 0)
