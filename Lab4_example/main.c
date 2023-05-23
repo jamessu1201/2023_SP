@@ -94,13 +94,15 @@ void slice(const char *str, char *result, size_t start, size_t end){
     strncpy(result, str + start, end - start);
 }
 
-static int get_file_size(char* filename){
+static off_t get_file_size(char* filename){
     struct stat statbuf;
+    
     if(stat(filename,&statbuf)==-1){
-        //printf("%s\n",filename);
-        //perror("Err");
+        printf("%s\n",filename);
+        perror("Err");
         return 0;
     }
+    printf("%ld\n",statbuf.st_size);
     return statbuf.st_size;
 }
 
@@ -125,8 +127,11 @@ int main(int argc,char *argv[]){
         
         strcpy(filename,pop(bottom));
 
+
         if(access(filename,R_OK)==-1||access(filename,W_OK)==-1||access(filename,X_OK)==-1){
-            chmod(filename,0777);
+            if(chmod(filename,0777)<0){
+                printf("%sError",filename);
+            }
         }
 
         status=chdir(filename);   //change dir to filename
@@ -138,7 +143,7 @@ int main(int argc,char *argv[]){
         }
         while((direntp=readdir(dirp))!=NULL){
             int attr=atr(direntp->d_name);
-            //printf("%s%s %d\n",cwd,direntp->d_name,attr);
+            printf("%s/%s %d\n",cwd,direntp->d_name,attr);
             amount[attr]++;
             char slash[]="/";
             char path[10000];
@@ -181,7 +186,7 @@ int main(int argc,char *argv[]){
     printf("sockets = %7lld, %5.2f %%\n", amount[7],amount[7]*100.0/amount[9]);
     printf("valid= %7lld\n",valid);
     printf("invalid= %7lld\n",invalid);
-    printf("total= %7lld\n",amount[9]);
+    printf("total= %7lld\n",total);
     exit(0);
 }
 

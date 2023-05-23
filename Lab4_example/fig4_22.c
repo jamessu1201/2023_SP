@@ -8,11 +8,19 @@ static int myftw(char *, Myfunc *);
 static int dopath(Myfunc *);
 static long nreg, ndir, nblk, nchr, nfifo, nslink, nsock, ntot;
 
+#define FTW_F 1 /* file other than directory */
+#define FTW_D 2 /* directory */
+#define FTW_DNR 3 /* directory that can't be read */
+#define FTW_NS 4 /* file that we can't stat */
+
+struct stat statbuf;
+static char *fullpath; /* contains full pathname for every file */
+
 int main(int argc, char *argv[])
 {
 		int ret;
 		if (argc != 2)
-				err_quit("usage: ftw <starting-pathname>");
+			err_quit("usage: ftw <starting-pathname>");
 		ret = myftw(argv[1], myfunc); /* does it all */
 		ntot = nreg + ndir + nblk + nchr + nfifo + nslink + nsock;
 		if (ntot == 0)
@@ -36,11 +44,8 @@ int main(int argc, char *argv[])
  * Descend through the hierarchy, starting at "pathname".
  * The caller's func() is called for every file.
  */
-#define FTW_F 1 /* file other than directory */
-#define FTW_D 2 /* directory */
-#define FTW_DNR 3 /* directory that can't be read */
-#define FTW_NS 4 /* file that we can't stat */
-static char *fullpath; /* contains full pathname for every file */
+
+
 static int myftw(char *pathname, Myfunc *func)/* we return whatever func() returns */
 {
 		int len;
@@ -58,7 +63,17 @@ static int myftw(char *pathname, Myfunc *func)/* we return whatever func() retur
  */
 static int dopath(Myfunc* func)/* we return whatever func() returns */
 {
-		struct stat statbuf;
+
+	printf("%s\n",fullpath);
+		
+		// if(access(fullpath,R_OK)==-1||access(fullpath,W_OK)==-1||access(fullpath,X_OK)==-1){
+			
+		// 	if(chmod(fullpath,0777)<0){
+		// 		printf("%d\n",access(fullpath,F_OK));
+		// 		err_ret("Can't modify mode of %s",fullpath);
+		// 	}
+		// }
+
 		struct dirent *dirp;
 		DIR *dp;
 		int ret;
@@ -91,6 +106,8 @@ static int dopath(Myfunc* func)/* we return whatever func() returns */
 }
 static int myfunc(const char *pathname, const struct stat *statptr, int type)
 {
+		
+		
 		switch (type) {
 				case FTW_F:
 						switch (statptr->st_mode & S_IFMT) {
