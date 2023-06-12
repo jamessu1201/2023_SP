@@ -37,7 +37,7 @@ int main(void){
 
 	struct sigaction bit_alarm;
 	memset(&bit_alarm, 0, sizeof(bit_alarm));
-	bit_alarm.sa_handler = escape;
+	bit_alarm.sa_handler = fish_eating;
 
 	if(sigaction(SIGALRM,&bit_alarm,NULL)<0){
         perror("signal errror");
@@ -56,9 +56,7 @@ int main(void){
 
 	printf("Fishing rod is ready!\n");
 	//write your code here
-	while(1){
-
-	}
+	while(1){}
     
 	return 0;
 }
@@ -70,12 +68,7 @@ void put_pull_rod(int signum){
 		sleep(2);
 		printf("Bait into water, waiting fish...\n");
 		int r=test_rand();
-		sleep(r%5+1);
-		if(!r%3){
-			fish_eating();
-		}else{
-			printf("no fish\n");
-		}
+		alarm(r%5+1);
 		boolean=true;
 	}else{
 		printf("\nPull the fishing rod\n");
@@ -101,10 +94,15 @@ void escape(){
 }
 
 void fish_eating(){
-	printf("A fish is biting,pull the fishing rod\n");
-	get=true;
-	is_bite=true;
-	alarm(2);
+	if(boolean){
+		printf("A fish is biting,pull the fishing rod\n");
+		get=true;
+		is_bite=true;
+		sleep(2);
+		if(get){
+			escape();
+		}
+	}	
 }
 
 void exit_game(int signum){
